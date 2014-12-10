@@ -20,7 +20,7 @@ Instructions:
 5. Populate configuration cfg file with correct values
   
          - General Settings section
-		- access keys of the created IAM user
+                - access keys of the created IAM user
                 - aws region - all objects are expected to be created under this region
          - Opsworks Settings section
                 - opworks IAM roles
