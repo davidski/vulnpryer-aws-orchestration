@@ -1,0 +1,19 @@
+{
+"Statement": [
+{
+  "Action": [
+     "s3:*",
+     "cloudwatch:*",
+     "datapipeline:*",
+     "opsworks:*",
+     "ec2:*",
+     "sns:*",
+     "iam:*"
+  ],
+  "Effect": "Allow",
+  "Resource": [
+    "*"
+  ]
+}
+]
+}
