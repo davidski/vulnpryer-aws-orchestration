@@ -7,7 +7,9 @@ Instructions:
 
          https://forums.aws.amazon.com/thread.jspa?threadID=138201
 
-2. Generate Access keys for the IAM User
+2. Configure IAM User.
+         - Genearte access keys
+         - Set its permission policy to iam_policies/iam_user_policy
 
 3. Python Boto at least v2.33.0 is needed to run. One can use the latest Amazon AMI Linux provided by AWS.
 
