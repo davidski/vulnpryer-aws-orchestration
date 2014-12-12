@@ -7,7 +7,7 @@ Prerequisites:
   - SNS Topic ARN used for notification
   - S3 bucket/path created where custom scripts will be stored
   - S3 bucket/path created where DataPipeline will store logs
-  - Persistent EBS volume for mongodbstore 
+  - Persistent EBS volume for mongodb store 
 
 Instructions:
 
@@ -29,7 +29,7 @@ Instructions:
 
 6. Run the script
 
-       python deploy_vulnpryer.py
+         python deploy_vulnpryer.py
 
   
      High level description of what the script does:
