@@ -124,6 +124,15 @@ def prepare_custom_script(instance_id):
 
   print 'Uploaded script ' + str(k)
   
+# Prepares Pipeline Object Definition
+def prepare_pipeline_object(definition) :
+  new_definition = definition.replace('<pipeline_role>', config.get('data_pipeline','pipeline_role'))
+  new_definition = new_definition.replace('<pipeline_resource_role>', config.get('data_pipeline','pipeline_resource_role'))
+  new_definition = new_definition.replace('<aws_region>', config.get('general','aws_region'))
+  new_definition = new_definition.replace('<topic_arn>', config.get('data_pipeline', 'topic_arn'))
+  new_definition = new_definition.replace('<script_path>', config.get('custom_script', 's3_bucket') + "/" + config.get('custom_script', 's3_bucket_directory'))
+  return new_definition
+
 
 # Builds the Vulnpryer Data Pipeline
 def build_datapipeline() :
@@ -154,7 +163,15 @@ def build_datapipeline() :
   pipeline_id = dp.create_pipeline( config.get('data_pipeline','pipeline_name'),  config.get('data_pipeline','pipeline_name')).get('pipelineId')
   print 'Pipeline ' + config.get('data_pipeline','pipeline_name') + ' with ID ' + pipeline_id + ' created on ' + config.get('general','aws_region') 
 
-  dp.put_pipeline_definition( ast.literal_eval('[' + config.get('data_pipeline','pipeline_schedule')  +',' +  config.get('data_pipeline','pipeline_resource') + ',' + config.get('data_pipeline','pipeline_settings') + ',' +  config.get('data_pipeline','pipeline_alarm_success') + ',' +  config.get('data_pipeline','pipeline_alarm_failure') + ',' +  config.get('data_pipeline','pipeline_alarm_overrunning') + ',' +  config.get('data_pipeline','pipeline_vulnpryer_activity') + ',' +  config.get('data_pipeline','pipeline_overrunning_notification_activity') +  ']') , pipeline_id)   
+  pipeline_objects = [config.get('data_pipeline','pipeline_schedule'), config.get('data_pipeline','pipeline_resource'), config.get('data_pipeline','pipeline_settings'),config.get('data_pipeline','pipeline_alarm_success'),config.get('data_pipeline','pipeline_alarm_failure'),config.get('data_pipeline','pipeline_alarm_overrunning'),config.get('data_pipeline','pipeline_vulnpryer_activity'),config.get('data_pipeline','pipeline_overrunning_notification_activity')]  
+
+  pipeline_definition = '' 
+  for i in range (0,len(pipeline_objects)):
+    pipeline_definition = pipeline_definition + prepare_pipeline_object(pipeline_objects[i])
+    if i < len(pipeline_objects)-1 :
+      pipeline_definition = pipeline_definition + ','  
+
+  dp.put_pipeline_definition( ast.literal_eval('[' + pipeline_definition  +  ']') , pipeline_id)   
   print 'Pipeline objects created'
   print 'Successfully built pipeline'
 
