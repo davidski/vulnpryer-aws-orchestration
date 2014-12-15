@@ -50,8 +50,12 @@ def define_iam_roles() :
   print '------------------------------'
    
   # Connect to AWS IAM
-  iam = boto.iam.connect_to_region(region_name=config.get('general','aws_region'), aws_access_key_id=config.get('general','aws_access_key_id'), aws_secret_access_key=config.get('general','aws_secret_access_key'))
-
+  try:
+  	iam = boto.iam.connect_to_region(region_name=config.get('general','aws_region'), aws_access_key_id=config.get('general','aws_access_key_id'), aws_secret_access_key=config.get('general','aws_secret_access_key'))
+	iam.get_account_alias()
+  except:
+	print "Check keys and configuration before proceeding."
+	return False
   # Prepare Data Pipeline Roles
   update_iam_role(iam, config.get('data_pipeline','pipeline_role'), 'iam_policies/datapipeline_vulnpryer_role_trust', 'iam_policies/datapipeline_vulnpryer_role_policy')
   update_iam_role(iam,  config.get('data_pipeline', 'pipeline_resource_role'), 'iam_policies/datapipeline_vulnpryer_resource_role_trust', 'iam_policies/datapipeline_vulnpryer_resource_role_policy')
@@ -61,8 +65,7 @@ def define_iam_roles() :
   update_iam_role(iam,  config.get('opsworks', 'opsworks_resource_role'), 'iam_policies/opsworks_vulnpryer_resource_role_trust', 'iam_policies/opsworks_vulnpryer_resource_role_policy')
 
   print 'Successfully prepared IAM roles'
-
-
+  return True
 
 # Builds the Opsworks Stack
 def build_opsworks_stack() :
@@ -70,7 +73,7 @@ def build_opsworks_stack() :
   print 'Building Vulnpryer Opsworks Stack'
   print '------------------------------------'
    
-  # Connect to AWS Opsworks  
+  # Connect to AWS Opsworks
   ow = boto.opsworks.connect_to_region(region_name=config.get('general','aws_region'), aws_access_key_id=config.get('general','aws_access_key_id'), aws_secret_access_key=config.get('general','aws_secret_access_key'))
 
   # Check if stack exists
@@ -90,10 +93,13 @@ def build_opsworks_stack() :
   ip_arn =  iam.get_instance_profile(config.get('opsworks','opsworks_resource_role')).get('get_instance_profile_response').get('get_instance_profile_result').get('instance_profile').get('arn')
 
   # Creating new Opworks Stack
-  new_stack =  ow.create_stack(config.get('opsworks','stack_name'), config.get('general','aws_region'), service_arn, ip_arn, vpc_id=config.get('opsworks','vpc_id'), default_os=config.get('opsworks','default_os'), default_subnet_id=config.get('opsworks','default_subnet_id'), custom_json=config.get('opsworks','custom_json'), configuration_manager=ast.literal_eval(config.get('opsworks','configuration_manager')), chef_configuration=ast.literal_eval(config.get('opsworks','chef_configuration')), use_custom_cookbooks=config.getboolean('opsworks', 'use_custom_cookbooks'), use_opsworks_security_groups=config.getboolean('opsworks', 'use_opsworks_security_groups'), custom_cookbooks_source=ast.literal_eval(config.get('opsworks','custom_cookbooks_source')), default_ssh_key_name=config.get('opsworks','default_ssh_key_name'))
+  try:
+  	new_stack =  ow.create_stack(config.get('opsworks','stack_name'), config.get('general','aws_region'), service_arn, ip_arn, vpc_id=config.get('opsworks','vpc_id'), default_os=config.get('opsworks','default_os'), default_subnet_id=config.get('opsworks','default_subnet_id'), custom_json=config.get('opsworks','custom_json'), configuration_manager=ast.literal_eval(config.get('opsworks','configuration_manager')), chef_configuration=ast.literal_eval(config.get('opsworks','chef_configuration')), use_custom_cookbooks=config.getboolean('opsworks', 'use_custom_cookbooks'), use_opsworks_security_groups=config.getboolean('opsworks', 'use_opsworks_security_groups'), custom_cookbooks_source=ast.literal_eval(config.get('opsworks','custom_cookbooks_source')), default_ssh_key_name=config.get('opsworks','default_ssh_key_name'))
 
-  new_layer = ow.create_layer(new_stack.get('StackId'), 'custom', config.get('opsworks','layer_name'), config.get('opsworks','layer_short_name'), attributes=None, custom_instance_profile_arn=ip_arn, custom_security_group_ids=[config.get('opsworks','layer_security_group')], packages=None, volume_configurations=None, enable_auto_healing=True, auto_assign_elastic_ips=False, auto_assign_public_ips=False, custom_recipes=ast.literal_eval(config.get('opsworks','layer_custom_recipes')), install_updates_on_boot=True, use_ebs_optimized_instances=False)  
- 
+  	new_layer = ow.create_layer(new_stack.get('StackId'), 'custom', config.get('opsworks','layer_name'), config.get('opsworks','layer_short_name'), attributes=None, custom_instance_profile_arn=ip_arn, custom_security_group_ids=[config.get('opsworks','layer_security_group')], packages=None, volume_configurations=None, enable_auto_healing=True, auto_assign_elastic_ips=False, auto_assign_public_ips=False, custom_recipes=ast.literal_eval(config.get('opsworks','layer_custom_recipes')), install_updates_on_boot=True, use_ebs_optimized_instances=False)  
+  except: 
+	print "New stack failed to create. Check keys and configuration before proceeding."
+	return False
   new_instance = ow.create_instance(new_stack.get('StackId'), [new_layer.get('LayerId')], config.get('opsworks','instance_type'), hostname=config.get('opsworks','instance_name')) 
   print 'Successfully built Opsworks Stack ' + config.get('opsworks', 'stack_name') + ' with stack id ' + new_stack.get('StackId')
   return new_instance.get('InstanceId') 
@@ -115,15 +121,20 @@ def prepare_custom_script(instance_id):
   print 'Plugged in region ' + config.get('general','aws_region') + ' and opsworks instance id ' + instance_id
   
   # Connect AWS S3
-  s3 = boto.s3.connect_to_region(region_name=config.get('general','aws_region'), aws_access_key_id=config.get('general','aws_access_key_id'), aws_secret_access_key=config.get('general','aws_secret_access_key')) 
-  bucket = s3.get_bucket(config.get('custom_script', 's3_bucket'))
+  try:
+  	s3 = boto.s3.connect_to_region(region_name=config.get('general','aws_region'), aws_access_key_id=config.get('general','aws_access_key_id'), aws_secret_access_key=config.get('general','aws_secret_access_key')) 
+  	bucket = s3.get_bucket(config.get('custom_script', 's3_bucket'))
+  except: 
+	print "Check keys and configuration before proceeding."
+	return False
+	
   k =  bucket.get_key(config.get('custom_script', 's3_bucket_directory') + 'start_vulnpryer.py' )  
   if k is None :
     k = bucket.new_key(config.get('custom_script', 's3_bucket_directory') + 'start_vulnpryer.py')
   k.set_contents_from_filename('temp/start_vulnpryer.py')
 
   print 'Uploaded script ' + str(k)
-  
+
 # Prepares Pipeline Object Definition
 def prepare_pipeline_object(definition) :
   new_definition = definition.replace('<pipeline_role>', config.get('data_pipeline','pipeline_role'))
@@ -142,7 +153,7 @@ def build_datapipeline() :
 
   # Connect AWS Data Pipeline 
   dp = boto.datapipeline.connect_to_region(region_name=config.get('general','aws_region'), aws_access_key_id=config.get('general','aws_access_key_id'), aws_secret_access_key=config.get('general','aws_secret_access_key'))
-  
+
   # Retrieve Data Pipeline ID by name
   search_marker=None
   while True:
@@ -176,9 +187,15 @@ def build_datapipeline() :
   print 'Successfully built pipeline'
 
 
-
 #### MAIN #####
-define_iam_roles()
+iam_status = define_iam_roles()
+if not iam_status:
+	print "Cannot proceed creating stack. Exiting.."
+	exit(1)
 instance_id = build_opsworks_stack()
+if not instance_id:
+	print "Cannot proceed building data pipeline. OpsWorks stack failed to create. Exiting.."
+	exit(1)
 prepare_custom_script(instance_id)
 build_datapipeline()
+exit(0)
