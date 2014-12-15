@@ -10,8 +10,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-r', '--region', type=str, default="us-east-1",
                     help="OpsWorks region")
-parser.add_argument('-r', 'parser.add_argument('-i', '--instance-id', type=str,
-			default="a834901b-bc4e-47e8-95cc-3ef32783b3ce",
+parser.add_argument('-i', '--instance-id', type=str,
+			default="8b0e333f-58b0-4fab-992d-b4b064b57197",
                     help="VulnPryer OpsWorks Instance ID")
 args = parser.parse_args()
 region = args.region
