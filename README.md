@@ -2,14 +2,14 @@ sch-vulnpryer-orchestration
 ===========================
 
 
-High level description of what the script does:
------------------------------------------------
+High-level Description
+----------------------
   - Prepares the IAM roles. Sets their permission and trust policies which are defined under iam_policies folder
   - Drops and rebuilds the Opsworks stack
   - Prepares the custom monitoring script and uploads to S3
   - Drops and rebuilds the Data Pipeline
 
-Prerequisites:
+Prerequisites
 --------------
   - Github repo for custom recipes
   - SNS Topic ARN used for notification
@@ -18,8 +18,8 @@ Prerequisites:
   - Persistent EBS volume for mongodb store 
   - Node with Python boto installed (>=v2.33.0)
 
-Usage:
--------------
+Usage
+-----
 In a node with Python boto installed (>=v2.33.0):
 1. Download the code
 
