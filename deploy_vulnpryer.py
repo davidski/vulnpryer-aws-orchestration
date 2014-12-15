@@ -119,7 +119,6 @@ def prepare_custom_script(instance_id):
 	line = re.sub(r"^.*--instance-id.*$", "parser.add_argument('-r', 'parser.add_argument('-i', '--instance-id', type=str,\n\t\t\tdefault=\"" + instance_id +"\",", line)
 	f2.write(line)
    
-   # f2.write(line.replace("region = '<aws_region>'", "region = '" + config.get('general','aws_region') + "'").replace("opswork_id = '<instance_id>'", "opswork_id = '" + instance_id +"'"))
   f1.close()
   f2.close()
   print 'Plugged in region ' + config.get('general','aws_region') + ' and opsworks instance id ' + instance_id
