@@ -5,7 +5,7 @@ import boto.iam
 import boto.opsworks
 import boto.s3
 import ConfigParser
-import ast
+import ast, re
 config = ConfigParser.ConfigParser()
 config.read('deploy_vulnpryer.cfg')
 
@@ -115,7 +115,11 @@ def prepare_custom_script(instance_id):
   f1 = open('custom_scripts/start_vulnpryer.py', 'r') 
   f2 = open('temp/start_vulnpryer.py', 'w')
   for line in f1:
-    f2.write(line.replace("region = '<aws_region>'", "region = '" + config.get('general','aws_region') + "'").replace("opswork_id = '<instance_id>'", "opswork_id = '" + instance_id +"'"))
+	line = re.sub(r"^.*--region.*$", "parser.add_argument('-r', '--region', type=str, default=\"" + config.get('general','aws_region') + "\",", line)
+	line = re.sub(r"^.*--instance-id.*$", "parser.add_argument('-r', 'parser.add_argument('-i', '--instance-id', type=str,\n\t\t\tdefault=\"" + instance_id +"\",", line)
+	f2.write(line)
+   
+   # f2.write(line.replace("region = '<aws_region>'", "region = '" + config.get('general','aws_region') + "'").replace("opswork_id = '<instance_id>'", "opswork_id = '" + instance_id +"'"))
   f1.close()
   f2.close()
   print 'Plugged in region ' + config.get('general','aws_region') + ' and opsworks instance id ' + instance_id
