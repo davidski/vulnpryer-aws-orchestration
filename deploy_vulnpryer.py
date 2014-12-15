@@ -116,7 +116,7 @@ def prepare_custom_script(instance_id):
   f2 = open('temp/start_vulnpryer.py', 'w')
   for line in f1:
 	line = re.sub(r"^.*--region.*$", "parser.add_argument('-r', '--region', type=str, default=\"" + config.get('general','aws_region') + "\",", line)
-	line = re.sub(r"^.*--instance-id.*$", "parser.add_argument('-r', 'parser.add_argument('-i', '--instance-id', type=str,\n\t\t\tdefault=\"" + instance_id +"\",", line)
+	line = re.sub(r"^.*--instance-id.*$", "parser.add_argument('-i', '--instance-id', type=str,\n\t\t\tdefault=\"" + instance_id +"\",", line)
 	f2.write(line)
    
   f1.close()
