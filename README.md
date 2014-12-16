@@ -4,7 +4,7 @@ sch-vulnpryer-orchestration
 
 High-level Description
 ----------------------
-  - Prepares the IAM roles. Sets their permission and trust policies which are defined under iam_policies folder
+  - Prepares the IAM roles; sets their permission and trust policies which are defined in the iam_policies folder
   - Drops and rebuilds the Opsworks stack
   - Prepares the custom monitoring script and uploads to S3
   - Drops and rebuilds the Data Pipeline
@@ -26,7 +26,7 @@ In a node with Python boto installed (>=v2.33.0):
 
          git clone https://github.com/cascadeo/sch-vulnpryer-orchestration
 
-2. Create an IAM user for Vulnpryer. The Data Pipeline objects will be owned by this user. Pipelines aren't visible to other IAM users in the account so a generic IAM user should be used for management. Reference:  https://forums.aws.amazon.com/thread.jspa?threadID=138201.
+2. Create an IAM user for Vulnpryer. The Data Pipeline objects will be owned by this user. Pipelines aren't visible to other IAM users in the account so it is suggested a generic IAM user be used for management. Reference:  https://forums.aws.amazon.com/thread.jspa?threadID=138201.
 
 3. Configure IAM user and perform the following:
 	- Generate access keys
@@ -40,7 +40,7 @@ In a node with Python boto installed (>=v2.33.0):
 
          python deploy_vulnpryer.py
 
-6. Log into AWS as the IAM user owner to the AWS Data Pipeline console on the specified region.
+6. Log into the AWS Data Pipeline console as the IAM user that owns the pipeline, in the specified region.
 
 7. Activate to run the pipeline.
 
