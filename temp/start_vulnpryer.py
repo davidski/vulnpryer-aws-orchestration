@@ -3,22 +3,45 @@
 # script for starting, monitoring and stopping the VulnPryer worker instance.
 # Takes two parameters AWS region and OpsWorks ID of the VulnPryer instance
  
-# import sys
 import time
 import argparse
- 
+import os
+
 parser = argparse.ArgumentParser()
-parser.add_argument('-r', '--region', type=str, default="us-east-1",
+parser.add_argument('-r', '--opsworks_region', type=str, default="us-east-1",
                     help="OpsWorks region")
-parser.add_argument('-i', '--instance-id', type=str,
-			default="0d4c366a-0ea7-4f5d-9e02-37549aec38af",
+parser.add_argument('-i', '--instance_id', type=str,
+			default="dfdc9b65-8d8a-49f7-b836-af54a039a6d8",
                     help="VulnPryer OpsWorks Instance ID")
+
+parser.add_argument('-vn', '--vulnpryer_pipeline_metric_nspace', default='Pipeline',
+                    type=str,
+                    help='Custom Cloudwatch metric namespace used for ' +
+                         'ELK Pipeline')
+parser.add_argument('-vm', '--vulnpryer_pipeline_metric_name', default='vulnpryer',
+                    type=str,
+                    help='Custom Cloudwatch metric name used for ' +
+                    'VulnPryer Pipeline')
+
+
 args = parser.parse_args()
-region = args.region
+region = args.opsworks_region
 opsworks_id = args.instance_id
- 
+vulnpryer_pipeline_metric_namespace = args.vulnpryer_pipeline_metric_nspace
+vulnpryer_pipeline_metric_name = args.vulnpryer_pipeline_metric_name
+
 # get status of the opsworks instance
 import boto.opsworks
+
+# Trigger population custom Cloudwatch metric for the pipeline
+os.system("echo '* * * * * /usr/bin/aws cloudwatch put-metric-data " +
+          "--metric-name " +
+          vulnpryer_pipeline_metric_name + " --namespace " +
+          vulnpryer_pipeline_metric_namespace +
+          " --value 1 --region " + region + "' | crontab -")
+
+
+
 print 'Start time: ' + time.ctime()
 print 'Getting status of OpsWorks instance ' + opsworks_id + \
       ' on region ' + region
@@ -28,7 +51,7 @@ print opsworks
 instances = opsworks.describe_instances(instance_ids=[opsworks_id]).items()
 for key, value in instances:
     status = value[0].get('Status')
- 
+failed_run = True 
 if status == 'stopped':
  
     # start vulnpryer
@@ -54,17 +77,19 @@ if status == 'stopped':
         print 'Stopping VulnPryer worker'
         opsworks.stop_instance(opsworks_id)
  
-        if status in ['start_failed', 'setup_failed']:
-            raise Exception('Failure was encountered while trying to setup \
-                            and run VulnPryer. Please check logs of the \
-                            OpsWorks instance')
-        else:
-            print 'VulnPryer completed successfully'
-    else:
-        raise Exception('VulnPryer instance is in ' + status +
-                        ' state which was unexpected. Another process or a \
-                        user could have requested shut down of the instance.')
-else:
-    raise Exception('VulnPryer instance expected status is stopped. It \
-                    is currently ' + status + '. Another process could be \
-                    already running.')
+	if status == "online":
+	    failed_run = False
+
+cw_cmd = "crontab -r && echo '* * * * * /usr/bin/aws cloudwatch put-metric-data " + \
+          "--metric-name " + \
+          vulnpryer_pipeline_metric_name + " --namespace " + \
+          vulnpryer_pipeline_metric_namespace + \
+          " --value 0 --region " + region + "' | crontab -"
+
+if failed_run:
+    os.system(cw_cmd)
+    time.sleep(60)
+    raise Exception("Failed run.. exiting..")
+
+os.system(cw_cmd)
+exit(0)	

@@ -38,7 +38,8 @@
      "iam:ListInstanceProfiles",
      "cloudwatch:*",
      "datapipeline:DescribeObjects",
-     "datapipeline:EvaluateExpression"
+     "datapipeline:EvaluateExpression",
+     "sts:AssumeRole"
    ],
    "Effect": "Allow",
    "Resource": [
