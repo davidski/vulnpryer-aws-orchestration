@@ -91,4 +91,5 @@ if failed_run:
     raise Exception("Failed run.. exiting..")
 
 os.system(cw_cmd)
+time.sleep(60)
 exit(0)	
