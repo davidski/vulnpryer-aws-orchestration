@@ -2,20 +2,30 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-     "Effect": "Allow",
+      "Sid": "AttachDataVolume",
+      "Effect": "Allow",
       "Action": [
-        "ec2:*"
+        "ec2:AttachVolume"
       ],
+      "Condition": {
+        "StringEqualsIgnoreCase": {
+          "ec2:ResourceTag/project": "VulnPryer"
+        }
+      },
       "Resource": [
         "*"
       ]
     },
     {
+      "Sid": "PutObjectsToS3",
       "Effect": "Allow",
       "Action": [
-        "s3:*"
+        "s3:PutObject",
+        "s3:PutObjectAcl"
       ],
-      "Resource": "arn:aws:s3:::vulnpryer-output"
+      "Resource": [
+        "arn:aws:s3:::analysis.cism.sch/vulndb"
+      ]
     }
   ]
 }
