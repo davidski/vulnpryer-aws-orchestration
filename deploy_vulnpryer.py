@@ -62,7 +62,7 @@ def define_iam_roles():
     update_iam_role(iam, config.get('data_pipeline', 'pipeline_resource_role'), 'iam_policies/datapipeline_vulnpryer_resource_role_trust', 'iam_policies/datapipeline_vulnpryer_resource_role_policy')
 
     # Prepare Opsworks Roles
-    update_iam_role(iam, config.get('opsworks', 'opsworks_role'), 'iam_policies/opsworks_vulnpryer_role_trust', 'iam_policies/opsworks_vulnpryer_role_policy')
+    # update_iam_role(iam, config.get('opsworks', 'opsworks_role'), 'iam_policies/opsworks_vulnpryer_role_trust', 'iam_policies/opsworks_vulnpryer_role_policy')
     update_iam_role(iam, config.get('opsworks', 'opsworks_resource_role'), 'iam_policies/opsworks_vulnpryer_resource_role_trust', 'iam_policies/opsworks_vulnpryer_resource_role_policy')
 
     print 'Successfully prepared IAM roles'
