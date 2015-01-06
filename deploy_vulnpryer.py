@@ -148,6 +148,7 @@ def prepare_pipeline_object(definition):
     new_definition = new_definition.replace('<pipeline_resource_role>', config.get('data_pipeline', 'pipeline_resource_role'))
     new_definition = new_definition.replace('<pipeline_aws_region>', config.get('general', 'pipeline_aws_region'))
     new_definition = new_definition.replace('<cw_aws_region>', config.get('general', 'cw_aws_region'))
+    new_definition = new_definition.replace('<vpc_aws_region>', config.get('general', 'vpc_aws_region'))
     new_definition = new_definition.replace('<opsworks_aws_region>', config.get('general', 'opsworks_aws_region'))
     new_definition = new_definition.replace('<topic_arn>', config.get('data_pipeline', 'topic_arn'))
     new_definition = new_definition.replace('<script_path>', config.get('custom_script', 's3_bucket') + "/" + config.get('custom_script', 's3_bucket_directory'))
