@@ -214,7 +214,6 @@ def build_datapipeline():
                         config.get('data_pipeline', 'pipeline_settings'),
                         config.get('data_pipeline', 'pipeline_alarm_success'),
                         config.get('data_pipeline', 'pipeline_alarm_failure'),
-                        config.get('data_pipeline', 'pipeline_alarm_overrunning'),
                         config.get('data_pipeline', 'pipeline_vulnpryer_activity'),
                         config.get('data_pipeline', 'pipeline_overrunning_notification_activity')]
 
