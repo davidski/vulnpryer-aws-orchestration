@@ -222,7 +222,7 @@ def build_datapipeline():
         pipeline_definition = pipeline_definition + prepare_pipeline_object(pipeline_objects[i])
         if i < len(pipeline_objects)-1:
             pipeline_definition = pipeline_definition + ','
-
+    print "Pipeline definition", pipeline_definition
     dp.put_pipeline_definition(ast.literal_eval('[' + pipeline_definition + ']'), pipeline_id)
     print 'Pipeline objects created'
     print 'Successfully built pipeline'
