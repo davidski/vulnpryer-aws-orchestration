@@ -1,32 +1,46 @@
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AttachDataVolume",
-      "Effect": "Allow",
-      "Action": [
-        "ec2:DescribeVolumes"
-        "ec2:AttachVolume"
-      ],
-      "Condition": {
-        "StringEqualsIgnoreCase": {
-          "ec2:ResourceTag/project": "VulnPryer"
-        }
-      },
-      "Resource": [
-        "*"
-      ]
-    },
-    {
-      "Sid": "PutObjectsToS3",
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:PutObjectAcl"
-      ],
-      "Resource": [
-        "arn:aws:s3:::analysis.cism.sch/vulndb"
-      ]
-    }
+   "Version":"2012-10-17",
+   "Statement":[
+     {
+         "Sid": "AllowUserToGetBucketLocation",
+         "Action": ["s3:GetBucketLocation"],
+         "Effect": "Allow",
+         "Resource": ["arn:aws:s3:::analysis.cism.sch"]
+     },
+     {
+         "Sid": "AllowEBSAttach",
+         "Action": ["ec2:*"],
+         "Effect": "Allow",
+         "Resource": "*"
+     },
+     {
+         "Sid": "AllowRootandHomeListing",
+         "Action": ["s3:ListBucket"],
+         "Effect": "Allow",
+         "Resource": ["arn:aws:s3:::analysis.cism.sch"],
+         "Condition":{
+             "StringEquals":{
+                 "s3:prefix":["","vulndb/"],
+                 "s3:delimeter":["/"]
+              }}
+     },
+     {
+         "Sid": "AllowWithBucketARN",
+         "Action": ["s3:List*", "s3:GetObject", "s3:PutObject*", "s3:DeleteObject"],
+         "Effect": "Allow",
+         "Resource": ["arn:aws:s3:::analysis.cism.sch"],
+         "Condition":{
+             "StringLike":{
+                 "s3:prefix":["vulndb/*", "vulndb"]
+         }}
+     },
+     {
+         "Sid": "AllowWithFullARN",
+         "Action": ["s3:List*", "s3:GetObject", "s3:PutObject*", "s3:DeleteObject"],
+         "Effect": "Allow",
+         "Resource": [
+              "arn:aws:s3:::analysis.cism.sch/vulndb",
+              "arn:aws:s3:::analysis.cism.sch/vulndb/*"]
+     }
   ]
 }
