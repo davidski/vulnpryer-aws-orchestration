@@ -5,14 +5,8 @@
       "Sid": "AttachDataVolume",
       "Effect": "Allow",
       "Action": [
-        "ec2:DescribeVolumes"
-        "ec2:AttachVolume"
+        "ec2:*"
       ],
-      "Condition": {
-        "StringEqualsIgnoreCase": {
-          "ec2:ResourceTag/project": "VulnPryer"
-        }
-      },
       "Resource": [
         "*"
       ]
@@ -30,3 +24,4 @@
     }
   ]
 }
+
