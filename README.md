@@ -1,4 +1,4 @@
-sch-vulnpryer-orchestration
+VulnPryer-AWS-Ochestration
 ===========================
 
 
@@ -24,13 +24,13 @@ In a node with Python boto installed (>=v2.33.0):
 
 1. Download the code.
 
-         git clone https://github.com/cascadeo/sch-vulnpryer-orchestration
+         git clone https://github.com/davidski/vulnpryer-aws-orchestration
 
 2. Create an IAM user for Vulnpryer. The Data Pipeline objects will be owned by this user. Pipelines aren't visible to other IAM users in the account so it is suggested a generic IAM user be used for management. Reference:  https://forums.aws.amazon.com/thread.jspa?threadID=138201.
 
 3. Configure IAM user and perform the following:
 	- Generate access keys
-	- Set its permission policy to iam_policies/iam_user_policy (https://github.com/cascadeo/sch-vulnpryer-orchestration/blob/master/iam_policies/iam_user_policy)
+	- Set its permission policy to [iam_policies/iam_user_policy](iam_policies/iam_user_policy)
 
 	Note: If you wish your own IAM user account to own the stack and pipeline, then ensure your IAM account has the required policies indicated above. 
 
